@@ -1,0 +1,74 @@
+{
+  "package": {
+    "$": {
+      "xmlns": "http://www.bpmi.org/2002/BPML/process",
+      "lastModified": "1684832123893",
+      "targetNamespace": "Suivi insert",
+      "version": "2.53.1.55"
+    },
+    "process": [
+      {
+        "$": {
+          "id": "4dc73ed1",
+          "name": "Suivi insert"
+        },
+        "context": [
+          ""
+        ],
+        "action": [
+          {
+            "$": {
+              "comment": "false",
+              "id": "17ad8941",
+              "name": "Suivi insert",
+              "nomAffiche": "Suivi insert"
+            },
+            "documentation": [
+              ""
+            ],
+            "input": [
+              {
+                "$": {
+                  "formatter": "Texte",
+                  "property": "InputMessage"
+                }
+              }
+            ],
+            "output": [
+              {
+                "source": [
+                  {
+                    "$": {
+                      "property": "InputMessage"
+                    }
+                  }
+                ]
+              }
+            ],
+            "attributes": [
+              {
+                "$": {
+                  "xmlns": ""
+                },
+                "extension": [
+                  {
+                    "_": "eventAction",
+                    "$": {
+                      "name": "activityName"
+                    }
+                  },
+                  {
+                    "_": "1",
+                    "$": {
+                      "name": "maxNumberOfThreads"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

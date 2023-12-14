@@ -32,44 +32,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-/*
-fs : Node.js file system - stocker, accéder, et gérer les données sur notre OS.
-Déjà dispo dans chaque projet Node.js sans installation.
-Méthodes utiles :
-    readFile
-    writeFile
-    watchFile - recevoir notifications de modifs
-    appendFile
-*/
 const fs = __importStar(require("fs"));
-/*
-Node.js util
-Déjà dispo dans chaque projet Node.js sans installation.
-*/
 const util = __importStar(require("util"));
-/*
-xml2js
-*/
 const xml2js = __importStar(require("xml2js"));
-// Convertir fs.readFile() à une fonction qui retourne une promesse
 const lireFichier = util.promisify(fs.readFile);
-function parserFichierXml(cheminFichier) {
+const ecrireFichier = util.promisify(fs.writeFile);
+function parserFichierXmlEtEcrireJson(cheminFichierXML, cheminFichierJson) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            //Lire le fichier XML
-            const donneesXml = yield lireFichier(cheminFichier, 'utf-8');
-            //Parser le fichier XML à JSON
+            const donneesXml = yield lireFichier(cheminFichierXML, 'utf-8');
             const parser = new xml2js.Parser();
             const donneesParsees = yield parser.parseStringPromise(donneesXml);
-            //Afficher les données parsées
-            console.log("XML à JSON : ", JSON.stringify(donneesParsees, null, 2));
+            yield ecrireFichier(cheminFichierJson, JSON.stringify(donneesParsees, null, 2));
+            console.log("Fichier JSON créé", cheminFichierJson);
         }
         catch (erreur) {
             console.error("Erreur : ", erreur);
         }
     });
 }
-//Main
-//Fichier à parser
-const cheminFichierXml = "testFichierXml.xml";
-parserFichierXml(cheminFichierXml);
+const cheminFichierXml = "./XML/Suivi insert.bpml";
+const cheminFichierJson = "./JSON/Suivi insert.json";
+parserFichierXmlEtEcrireJson(cheminFichierXml, cheminFichierJson);
