@@ -115,43 +115,30 @@ async function parserXmlEnJson(cheminRepertoireXML: string): Promise<void> {
         if (contenuXml !== null) {
             for (const element of contenuXml) {
                 let donneesXmlparses = await parser.parseStringPromise(element.contenuFichier);
-                //console.log(JSON.stringify(donneesXmlparses, null, 2)); //test worked
-                //up to here, it's fine
                 let fichierSplit: string[] = element.nomFichier.split('.'); //Isoler nom du fichier sans l'extension
                 let nouveauFichierJson = "./JSON/" + fichierSplit[0] + ".json";
-                console.log(nouveauFichierJson);
                 await ecrireFichier(nouveauFichierJson, JSON.stringify(donneesXmlparses, null, 2));
-                console.log("Fichier JSON créé", nouveauFichierJson);
             }
         } else {
             console.error("Erreur : la valeur est null");
         }
-
-        
-            
-        
-        // await Promise.all(contenuXML.map(async (fichier)=>{
-        //     await parser.parseStringPromise(fichier);
-        // }));
-        // console.log(contenuXML);
-
-        //Ecrire un fichier JSON
-        // await Promise.all()
-        // await ecrireFichier(cheminFichierJson, JSON.stringify(donneesXmlparses, null, 2));
-        // console.log("Fichier JSON créé.");
     } catch (erreur) {
         console.error("Erreur rencontré en écrivant le fichier JSON : ", erreur);
     }
 }
 
 //Main
+const repertoireXML = "XML";
+parserXmlEnJson(repertoireXML);
+
+
+
 
 //Fichier à parser (./XML/...)
 //const cheminFichierXml = "./XML/Suivi insert.bpml";
 //const cheminFichierJson ="./JSON/Suivi insert.json";
-const repertoireXML = "XML";
+
 //let read = lireFichiersXML(repertoireXML);
-parserXmlEnJson(repertoireXML);
 //parserFichierXml(cheminFichierXml);
 //parserFichierXmlEtEcrireJson(cheminFichierXml, cheminFichierJson);
 
