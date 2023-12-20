@@ -37,11 +37,16 @@ const util = __importStar(require("util"));
 const xml2js = __importStar(require("xml2js"));
 const lireFichier = util.promisify(fs.readFile);
 const ecrireFichier = util.promisify(fs.writeFile);
-function lireFichierXML(cheminFichierXML) {
+function lireFichiersXML(cheminRepertoireXML) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const donneesXml = yield lireFichier(cheminFichierXML, 'utf-8');
-            return donneesXml;
+            let contenuFichiers = [];
+            const fichiersXML = yield fs.promises.readdir(cheminRepertoireXML);
+            yield Promise.all(fichiersXML.map((fichier) => __awaiter(this, void 0, void 0, function* () {
+                let myObjet = { nomFichier: fichier, contenuFichier: yield lireFichier(cheminRepertoireXML + '/' + fichier, 'utf-8') };
+                contenuFichiers.push(myObjet);
+            })));
+            return contenuFichiers;
         }
         catch (erreur) {
             console.error("Erreur en lisant fichier XML : ", erreur);
@@ -49,13 +54,24 @@ function lireFichierXML(cheminFichierXML) {
         }
     });
 }
-function parserXmlEnJson(contenuXML, cheminFichierJson) {
+function parserXmlEnJson(cheminRepertoireXML) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            const contenuXml = yield lireFichiersXML(cheminRepertoireXML);
             const parser = new xml2js.Parser();
-            const donneesXmlparses = yield parser.parseStringPromise(contenuXML);
-            yield ecrireFichier(cheminFichierJson, JSON.stringify(donneesXmlparses, null, 2));
-            console.log("Fichier JSON créé.");
+            if (contenuXml !== null) {
+                for (const element of contenuXml) {
+                    let donneesXmlparses = yield parser.parseStringPromise(element.contenuFichier);
+                    let fichierSplit = element.nomFichier.split('.');
+                    let nouveauFichierJson = "./JSON/" + fichierSplit[0] + ".json";
+                    console.log(nouveauFichierJson);
+                    yield ecrireFichier(nouveauFichierJson, JSON.stringify(donneesXmlparses, null, 2));
+                    console.log("Fichier JSON créé", nouveauFichierJson);
+                }
+            }
+            else {
+                console.error("Erreur : la valeur est null");
+            }
         }
         catch (erreur) {
             console.error("Erreur rencontré en écrivant le fichier JSON : ", erreur);
@@ -63,22 +79,4 @@ function parserXmlEnJson(contenuXML, cheminFichierJson) {
     });
 }
 const repertoireXML = "XML";
-fs.promises.readdir(repertoireXML)
-    .then((fichiersXML) => {
-    fichiersXML.forEach((fichierXML) => {
-        lireFichierXML("./XML/" + fichierXML)
-            .then((contenuXml) => {
-            if (contenuXml !== null) {
-                const fichierSplit = fichierXML.split('.');
-                console.log(fichierSplit);
-                console.log(fichierSplit[0]);
-                return parserXmlEnJson(contenuXml, "./JSON/" + fichierSplit[0] + ".json");
-            }
-            else {
-                console.log("Erreur : la valeur est null");
-                return Promise.resolve();
-            }
-        })
-            .catch((erreur) => console.error("Erreur trouvé : ", erreur));
-    });
-});
+parserXmlEnJson(repertoireXML);
