@@ -21,10 +21,7 @@ import * as xml2js from 'xml2js';
 
 //import * as path from 'path';
 
-// Convertir fs.readFile() à une fonction qui retourne une promesse
-const lireFichier = util.promisify(fs.readFile);
-// Convertir fs.readFile() à une fonction qui retourne une promesse
-const ecrireFichier = util.promisify(fs.writeFile);
+
 
 //Parser le fichier XML et afficher les données dans le console en JSON. L'objet retourné et une promesse.
 /* async function parserFichierXml(cheminFichier: string): Promise<void> {
@@ -74,14 +71,16 @@ async function lireFichierXML(cheminFichierXML: string): Promise<string | null> 
     }
 }
 */
+
 //Lire tous les fichiers XML dans un repertoire
 async function lireFichiersXML(cheminRepertoireXML: string): Promise<any[] | null> {
     try {
+        const lireFichier = util.promisify(fs.readFile); // Convertir fs.readFile() à une fonction qui retourne une promesse
         let contenuFichiers: any[] = [];
         const fichiersXML: string[] = await fs.promises.readdir(cheminRepertoireXML);
         await Promise.all(fichiersXML.map(async (fichier) => {
-            let myObjet = {nomFichier: fichier, contenuFichier: await lireFichier(cheminRepertoireXML + '/' + fichier, 'utf-8')};
-            contenuFichiers.push(myObjet);
+            let objetFichier = {nomFichier: fichier, contenuFichier: await lireFichier(cheminRepertoireXML + '/' + fichier, 'utf-8')};
+            contenuFichiers.push(objetFichier);
         }));
         return contenuFichiers;
 
@@ -109,6 +108,7 @@ async function lireFichiersXML(cheminRepertoireXML: string): Promise<any[] | nul
 async function parserXmlEnJson(cheminRepertoireXML: string): Promise<void> {
     
     try {
+        const ecrireFichier = util.promisify(fs.writeFile); // Convertir fs.writeFile() à une fonction qui retourne une promesse
         const contenuXml = await lireFichiersXML(cheminRepertoireXML);
         //Parser XML en JSON
         const parser = new xml2js.Parser();
