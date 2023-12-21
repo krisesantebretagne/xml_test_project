@@ -35,16 +35,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs = __importStar(require("fs"));
 const util = __importStar(require("util"));
 const xml2js = __importStar(require("xml2js"));
-const lireFichier = util.promisify(fs.readFile);
-const ecrireFichier = util.promisify(fs.writeFile);
 function lireFichiersXML(cheminRepertoireXML) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            const lireFichier = util.promisify(fs.readFile);
             let contenuFichiers = [];
             const fichiersXML = yield fs.promises.readdir(cheminRepertoireXML);
             yield Promise.all(fichiersXML.map((fichier) => __awaiter(this, void 0, void 0, function* () {
-                let myObjet = { nomFichier: fichier, contenuFichier: yield lireFichier(cheminRepertoireXML + '/' + fichier, 'utf-8') };
-                contenuFichiers.push(myObjet);
+                let objetFichier = { nomFichier: fichier, contenuFichier: yield lireFichier(cheminRepertoireXML + '/' + fichier, 'utf-8') };
+                contenuFichiers.push(objetFichier);
             })));
             return contenuFichiers;
         }
@@ -57,6 +56,7 @@ function lireFichiersXML(cheminRepertoireXML) {
 function parserXmlEnJson(cheminRepertoireXML) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            const ecrireFichier = util.promisify(fs.writeFile);
             const contenuXml = yield lireFichiersXML(cheminRepertoireXML);
             const parser = new xml2js.Parser();
             if (contenuXml !== null) {
@@ -64,9 +64,7 @@ function parserXmlEnJson(cheminRepertoireXML) {
                     let donneesXmlparses = yield parser.parseStringPromise(element.contenuFichier);
                     let fichierSplit = element.nomFichier.split('.');
                     let nouveauFichierJson = "./JSON/" + fichierSplit[0] + ".json";
-                    console.log(nouveauFichierJson);
                     yield ecrireFichier(nouveauFichierJson, JSON.stringify(donneesXmlparses, null, 2));
-                    console.log("Fichier JSON créé", nouveauFichierJson);
                 }
             }
             else {
